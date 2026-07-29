@@ -3,142 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClothTrack & Fix - Hub de Ajustes</title>
+    <title>WearCare - Gestão de Roupas & Consertos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .active-step { @apply bg-indigo-600 text-white border-indigo-600; }
-        .inactive-step { @apply bg-gray-100 text-gray-500 border-gray-300; }
-    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
 
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 text-white p-2 rounded-lg font-bold text-xl">
-                    <i class="fa-solid fa-scissors"></i>
-                </div>
-                <span class="font-bold text-xl text-slate-900 tracking-tight">ClothTrack <span class="text-indigo-600">& Fix</span></span>
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-wide flex items-center gap-2">
+                    🧵 WearCare
+                </h1>
+                <p class="text-indigo-200 text-sm">Contagem de peças & Gestão de consertos</p>
             </div>
-            <div class="flex items-center space-x-4">
-                <button class="text-slate-600 hover:text-indigo-600 font-medium text-sm transition">
-                    <i class="fa-solid fa-box-archive mr-1"></i> Meu Guarda-Roupa
-                </button>
-                <div class="w-8 h-8 rounded-full bg-indigo-100 border border-indigo-300 flex items-center justify-center font-bold text-indigo-700 text-sm">
-                    JS
+            <div id="stats-summary" class="hidden md:flex gap-4 bg-indigo-700 px-4 py-2 rounded-lg text-sm">
                 </div>
-            </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8">
+    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Solicitação de Conserto & Reparo</h1>
-            <p class="mt-2 text-slate-600">Envie a foto do defeito, escolha o serviço e acompanhe o status em tempo real.</p>
-        </div>
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 lg:col-span-1 h-fit">
+            <h2 class="text-lg font-semibold mb-4 text-slate-700 flex items-center gap-2">
+                ➕ Cadastrar Peça
+            </h2>
+            <form id="clothing-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Nome/Descrição da Peça</label>
+                    <input type="text" id="item-name" required placeholder="Ex: Calça Jeans Levis" 
+                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                </div>
 
-        <div class="mb-10">
-            <div class="flex items-center justify-between max-w-2xl mx-auto relative">
-                <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -z-10 -translate-y-1/2"></div>
-                
-                <div class="flex flex-col items-center bg-slate-50 px-2">
-                    <div id="step-btn-1" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold active-step transition-all">1</div>
-                    <span class="text-xs font-semibold mt-2 text-slate-700">Diagnóstico</span>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Categoria</label>
+                    <select id="item-category" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <option value="Camisetas/Blusas">Camisetas / Blusas</option>
+                        <option value="Calças/Bermudas">Calças / Bermudas</option>
+                        <option value="Casacos/Jaquetas">Casacos / Jaquetas</option>
+                        <option value="Vestidos/Saias">Vestidos / Saias</option>
+                        <option value="Outros">Outros</option>
+                    </select>
                 </div>
-                <div class="flex flex-col items-center bg-slate-50 px-2">
-                    <div id="step-btn-2" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold inactive-step transition-all">2</div>
-                    <span class="text-xs font-semibold mt-2 text-slate-500">Serviço</span>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Status da Peça</label>
+                    <select id="item-status" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" onchange="toggleRepairField()">
+                        <option value="ok">Em bom estado</option>
+                        <option value="needs_repair">Precisa de conserto</option>
+                    </select>
                 </div>
-                <div class="flex flex-col items-center bg-slate-50 px-2">
-                    <div id="step-btn-3" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold inactive-step transition-all">3</div>
-                    <span class="text-xs font-semibold mt-2 text-slate-500">Profissional</span>
+
+                <div id="repair-details-container" class="hidden">
+                    <label class="block text-sm font-medium text-amber-700 mb-1">Detalhes do Conserto</label>
+                    <input type="text" id="repair-details" placeholder="Ex: Trocar zíper, fazer bainha..." 
+                        class="w-full px-3 py-2 border border-amber-300 bg-amber-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
                 </div>
-                <div class="flex flex-col items-center bg-slate-50 px-2">
-                    <div id="step-btn-4" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold inactive-step transition-all">4</div>
-                    <span class="text-xs font-semibold mt-2 text-slate-500">Status</span>
+
+                <button type="submit" 
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition-colors text-sm shadow">
+                    Adicionar ao Guardar-Roupa
+                </button>
+            </form>
+        </section>
+
+        <section class="lg:col-span-2 space-y-6">
+            
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                    <span class="text-xs font-semibold text-slate-400 uppercase">Total de Peças</span>
+                    <p id="count-total" class="text-2xl font-bold text-slate-800">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                    <span class="text-xs font-semibold text-emerald-500 uppercase">Em Bom Estado</span>
+                    <p id="count-ok" class="text-2xl font-bold text-emerald-600">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                    <span class="text-xs font-semibold text-amber-500 uppercase">Para Conserto</span>
+                    <p id="count-repair" class="text-2xl font-bold text-amber-600">0</p>
                 </div>
             </div>
-        </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+            <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <h3 class="font-semibold text-slate-700">Meu Inventário</h3>
+                <div class="flex gap-2">
+                    <button onclick="setFilter('all')" id="btn-filter-all" class="px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">Todas</button>
+                    <button onclick="setFilter('needs_repair')" id="btn-filter-repair" class="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">Apenas Consertos</button>
+                </div>
+            </div>
+
+            <div id="items-list" class="space-y-3">
+                </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Estado da aplicação com dados de exemplo
+        let clothes = [
+            { id: 1, name: "Jaqueta de Couro", category: "Casacos/Jaquetas", status: "needs_repair", repair: "Trocar o zíper principal" },
+            { id: 2, name: "Calça Alfaiataria", category: "Calças/Bermudas", status: "ok", repair: "" },
+            { id: 3, name: "Camisa Branca", category: "Camisetas/Blusas", status: "needs_repair", repair: "Ajustar manga e costura lateral" }
+        ];
+
+        let currentFilter = 'all';
+
+        // Elementos do DOM
+        const form = document.getElementById('clothing-form');
+        const nameInput = document.getElementById('item-name');
+        const categoryInput = document.getElementById('item-category');
+        const statusInput = document.getElementById('item-status');
+        const repairDetailsContainer = document.getElementById('repair-details-container');
+        const repairDetailsInput = document.getElementById('repair-details');
+        const itemsList = document.getElementById('items-list');
+
+        // Exibir/Ocultar campo de detalhes do conserto
+        function toggleRepairField() {
+            if (statusInput.value === 'needs_repair') {
+                repairDetailsContainer.classList.remove('hidden');
+            } else {
+                repairDetailsContainer.classList.add('hidden');
+                repairDetailsInput.value = '';
+            }
+        }
+
+        // Adicionar nova peça
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const newItem = {
+                id: Date.now(),
+                name: nameInput.value,
+                category: categoryInput.value,
+                status: statusInput.value,
+                repair: statusInput.value === 'needs_repair' ? repairDetailsInput.value : ''
+            };
+
+            clothes.push(newItem);
+            form.reset();
+            toggleRepairField();
+            render();
+        });
+
+        // Alternar status da peça (Consertada / Precisa de Conserto)
+        function toggleStatus(id) {
+            clothes = clothes.map(item => {
+                if (item.id === id) {
+                    const newStatus = item.status === 'ok' ? 'needs_repair' : 'ok';
+                    return { 
+                        ...item, 
+                        status: newStatus, 
+                        repair: newStatus === 'needs_repair' ? 'Ajustes gerais' : '' 
+                    };
+                }
+                return item;
+            });
+            render();
+        }
+
+        // Remover peça
+        function deleteItem(id) {
+            clothes = clothes.filter(item => item.id !== id);
+            render();
+        }
+
+        // Definir Filtro
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.getElementById('btn-filter-all').className = filter === 'all' 
+                ? 'px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700' 
+                : 'px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200';
             
-            <section id="step-1" class="space-y-6">
-                <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3">
-                    <i class="fa-solid fa-camera text-indigo-600 mr-2"></i> 1. Diagnóstico Visual da Peça
-                </h2>
+            document.getElementById('btn-filter-repair').className = filter === 'needs_repair' 
+                ? 'px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700' 
+                : 'px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200';
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Foto da Avaria/Defeito</label>
-                        <div id="dropzone" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-6 text-center cursor-pointer transition bg-slate-50 flex flex-col items-center justify-center h-48">
-                            <input type="file" id="file-input" class="hidden" accept="image/*" onchange="previewImage(event)">
-                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
-                            <span class="text-sm font-medium text-slate-600">Clique para enviar ou arraste a foto</span>
-                            <span class="text-xs text-slate-400 mt-1">PNG, JPG até 5MB</span>
-                        </div>
-                        <div id="preview-container" class="hidden mt-4 relative rounded-xl overflow-hidden border border-slate-200 h-48 bg-slate-900">
-                            <img id="image-preview" class="w-full h-full object-contain" alt="Preview da imagem">
-                            <button onclick="removeImage()" class="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 w-7 h-7 flex items-center justify-center text-xs hover:bg-red-700">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
+            render();
+        }
+
+        // Atualizar Métricas
+        function updateStats() {
+            const total = clothes.length;
+            const okCount = clothes.filter(i => i.status === 'ok').length;
+            const repairCount = clothes.filter(i => i.status === 'needs_repair').length;
+
+            document.getElementById('count-total').innerText = total;
+            document.getElementById('count-ok').innerText = okCount;
+            document.getElementById('count-repair').innerText = repairCount;
+
+            document.getElementById('stats-summary').innerHTML = `
+                <span>Total: <b>${total}</b></span>
+                <span>•</span>
+                <span class="text-amber-200">Em conserto: <b>${repairCount}</b></span>
+            `;
+        }
+
+        // Renderizar a lista na tela
+        function render() {
+            updateStats();
+            itemsList.innerHTML = '';
+
+            const filteredItems = clothes.filter(item => {
+                if (currentFilter === 'needs_repair') return item.status === 'needs_repair';
+                return true;
+            });
+
+            if (filteredItems.length === 0) {
+                itemsList.innerHTML = `
+                    <div class="bg-white p-8 text-center rounded-xl border border-slate-200 text-slate-400">
+                        Nenhuma peça encontrada nesta categoria.
                     </div>
+                `;
+                return;
+            }
 
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tipo de Peça</label>
-                            <select id="piece-type" class="w-full border border-slate-300 rounded-lg p-2.5 text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                                <option value="">Selecione...</option>
-                                <option value="calca">Calça / Jeans</option>
-                                <option value="camisa">Camisa / Camiseta</option>
-                                <option value="vestido">Vestido / Saia</option>
-                                <option value="casaco">Casaco / Jaqueta</option>
-                            </select>
-                        </div>
+            filteredItems.forEach(item => {
+                const isRepair = item.status === 'needs_repair';
+                const card = document.createElement('div');
+                card.className = `bg-white p-4 rounded-xl border ${isRepair ? 'border-amber-200 bg-amber-50/30' : 'border-slate-200'} shadow-sm flex justify-between items-center`;
 
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">Descrição do Problema</label>
-                            <textarea id="issue-desc" rows="3" class="w-full border border-slate-300 rounded-lg p-2.5 text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Ex: O zíper emperrou e descosturou perto do bolso direito..."></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-end pt-4">
-                    <button onclick="goToStep(2)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold transition flex items-center">
-                        Próximo: Escolher Serviço <i class="fa-solid fa-arrow-right ml-2"></i>
-                    </button>
-                </div>
-            </section>
-
-            <section id="step-2" class="space-y-6 hidden">
-                <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3">
-                    <i class="fa-solid fa-list-check text-indigo-600 mr-2"></i> 2. Catálogo de Serviços & Estimativa
-                </h2>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <label class="border border-slate-200 rounded-xl p-4 flex items-start space-x-3 cursor-pointer hover:border-indigo-500 transition">
-                        <input type="radio" name="service" value="30.00" class="mt-1 text-indigo-600 focus:ring-indigo-500" onchange="calculateEstimate()">
-                        <div class="flex-grow">
-                            <span class="block font-bold text-slate-900">Troca de Zíper Comum</span>
-                            <span class="block text-xs text-slate-500">Substituição completa do cursor e trilho.</span>
-                            <span class="block text-sm font-semibold text-indigo-600 mt-2">R$ 30,00</span>
-                        </div>
-                    </label>
-
-                    <label class="border border-slate-200 rounded-xl p-4 flex items-start space-x-3 cursor-pointer hover:border-indigo-500 transition">
-                        <input type="radio" name="service" value="25.00" class="mt-1 text-indigo-600 focus:ring-indigo-500" onchange="calculateEstimate()">
-                        <div class="flex-grow">
-                            <span class="block font-bold text-slate-900">Fazer Bainha / Barra</span>
-                            <span class="block text-xs text-slate-500">Ajuste de comprimento simples ou galão.</span>
-                            <span class="block text-sm font-semibold text-indigo-600 mt-2">R$ 25,00</span>
-                        </div>
-                    </label>
-
-                    <label class="border border-slate-200 rounded-xl p-4 flex items-start space-x-3 cursor-pointer hover:border-indigo-500 transition">
-                        <input type="radio" name="service" value="35.00" class="mt-1 text-indigo-600 focus:ring-indigo-500" onchange="calculateEstimate()">
-                        <div class="flex-grow">
-                            <span class="block font-bold text-slate-900">Ajuste de Cós / Cintura</span>
-                            <span class="block text-xs text-slate-500">Apertar ou folgar cintura de calças/saias.</span>
-                            <span class="block text-sm font-semibold text-
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-semibold text-slate-800">${item.name}</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-500 border
