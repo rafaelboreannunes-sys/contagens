@@ -3,220 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Armário</title>
+    <title>Meu Guarda-Roupa Digital</title>
     <style>
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            background-color: #eef2f5;
-            margin: 0;
-            padding: 20px;
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
+            padding: 20px;
         }
 
         .container {
             background: #ffffff;
             width: 100%;
-            max-width: 500px;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-
-        h2 {
-            margin-top: 0;
-            color: #2c3e50;
-            text-align: center;
-        }
-
-        .form-group {
+            max-width: 450px;
+            min-height: 550px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            position: relative;
+        }
+
+        /* Controle das Telas */
+        .tela {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .tela.ativa {
+            display: flex;
+        }
+
+        /* Cabeçalho e Botão Voltar */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
         }
 
-        input, select, button {
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 14px;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #4a90e2;
-        }
-
-        button.btn-add {
-            background-color: #4a90e2;
-            color: white;
+        .btn-voltar {
+            background-color: #e4e6eb;
+            color: #333;
             border: none;
-            font-weight: bold;
+            padding: 8px 14px;
+            border-radius: 20px;
             cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
             transition: background 0.2s;
         }
 
-        button.btn-add:hover {
-            background-color: #357abd;
+        .btn-voltar:hover {
+            background-color: #d8dadf;
         }
 
-        .search-box {
-            margin-bottom: 15px;
+        h2 {
+            font-size: 20px;
+            color: #1c1e21;
         }
 
+        /* Formulários e Inputs */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #444;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        button.btn-principal {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        button.btn-principal:hover {
+            background-color: #0056b3;
+        }
+
+        /* Lista de Roupas */
         .lista-roupas {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 15px;
+            overflow-y: auto;
+            max-height: 380px;
         }
 
-        .card-roupa {
+        .item-roupa {
             background-color: #f8f9fa;
-            border-left: 5px solid #4a90e2;
-            padding: 12px 15px;
-            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            border-left: 6px solid #007bff;
+            padding: 15px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
-        .info-roupa strong {
-            display: block;
+        .item-roupa:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .info-roupa h4 {
             color: #333;
-            font-size: 16px;
+            margin-bottom: 3px;
         }
 
         .info-roupa span {
-            font-size: 12px;
-            color: #777;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 13px;
+            color: #666;
         }
 
-        .btn-delete {
-            background-color: #ff4d4d;
+        .btn-excluir {
+            background-color: #dc3545;
             color: white;
             border: none;
-            padding: 6px 10px;
-            border-radius: 5px;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
+            font-weight: bold;
+            margin-top: 20px;
         }
 
-        .btn-delete:hover {
-            background-color: #cc0000;
+        .btn-excluir:hover {
+            background-color: #bd2130;
         }
 
         .vazio {
             text-align: center;
-            color: #888;
-            font-size: 14px;
-            margin-top: 10px;
+            color: #777;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🧥 Meu Armário</h2>
 
-    <!-- Formulário de Cadastro -->
-    <div class="form-group">
-        <input type="text" id="nomeRoupa" placeholder="Nome da roupa (ex: Jaqueta de Couro)">
-        <select id="categoriaRoupa">
-            <option value="Camiseta / Blusa">Camiseta / Blusa</option>
-            <option value="Calça / Bermuda">Calça / Bermuda</option>
-            <option value="Casaco / Jaqueta">Casaco / Jaqueta</option>
-            <option value="Calçado">Calçado</option>
-            <option value="Acessório">Acessório</option>
-        </select>
-        <button class="btn-add" onclick="adicionarRoupa()">Guardar no Armário</button>
+    <!-- TELA 1: LISTA DO GUARDA-ROUPA -->
+    <div id="telaInicio" class="tela ativa">
+        <div class="header">
+            <h2>👕 Meu Armário</h2>
+            <button class="btn-principal" onclick="navegarPara('telaCadastro')" style="margin: 0; padding: 8px 12px; font-size: 14px;">+ Nova Roupa</button>
+        </div>
+
+        <input type="text" id="inputBusca" placeholder="🔍 Buscar roupa..." oninput="renderizarLista()">
+
+        <div id="listaRoupas" class="lista-roupas"></div>
     </div>
 
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    <!-- TELA 2: FORMULÁRIO DE CADASTRO -->
+    <div id="telaCadastro" class="tela">
+        <div class="header">
+            <button class="btn-voltar" onclick="navegarPara('telaInicio')">⬅️ Voltar</button>
+            <h2>Guardar Roupa</h2>
+        </div>
 
-    <!-- Busca -->
-    <input type="text" class="search-box" id="inputBusca" placeholder="🔍 Buscar roupa pelo nome..." oninput="renderizarRoupas()">
+        <div class="form-group">
+            <div>
+                <label>Nome da Peça:</label>
+                <input type="text" id="nomeRoupa" placeholder="Ex: Jaqueta de Couro, Camiseta Preta">
+            </div>
 
-    <!-- Lista de Roupas -->
-    <div id="listaRoupas" class="lista-roupas"></div>
+            <div>
+                <label>Categoria:</label>
+                <select id="categoriaRoupa">
+                    <option value="Camiseta / Blusa">Camiseta / Blusa</option>
+                    <option value="Calça / Bermuda">Calça / Bermuda</option>
+                    <option value="Casaco / Jaqueta">Casaco / Jaqueta</option>
+                    <option value="Calçado">Calçado</option>
+                    <option value="Acessório">Acessório</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Cor / Observações:</label>
+                <input type="text" id="detalhesRoupa" placeholder="Ex: Preta, tamanho M, guardar no cabide">
+            </div>
+
+            <button class="btn-principal" onclick="salvarRoupa()">Guardar no Armário</button>
+        </div>
+    </div>
+
+    <!-- TELA 3: VER DETALHES DA ROUPA -->
+    <div id="telaDetalhes" class="tela">
+        <div class="header">
+            <button class="btn-voltar" onclick="navegarPara('telaInicio')">⬅️ Voltar</button>
+            <h2>Detalhes da Peça</h2>
+        </div>
+
+        <div id="conteudoDetalhes" style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+            <!-- Preenchido via JavaScript -->
+        </div>
+
+        <button class="btn-excluir" onclick="excluirRoupaAtual()">🗑️ Excluir esta roupa</button>
+    </div>
+
 </div>
 
 <script>
-    // Carrega do localStorage ou inicia lista vazia
-    let armario = JSON.parse(localStorage.getItem('meuArmario')) || [];
+    // Armazenamento das roupas no navegador (localStorage)
+    let armario = JSON.parse(localStorage.getItem('meuArmarioApp')) || [];
+    let roupaSelecionadaId = null;
 
-    function salvar() {
-        localStorage.setItem('meuArmario', JSON.stringify(armario));
+    // Função de Navegação entre Telas
+    function navegarPara(idTela) {
+        document.querySelectorAll('.tela').forEach(tela => tela.classList.remove('ativa'));
+        document.getElementById(idTela).classList.add('ativa');
+
+        if (idTela === 'telaInicio') {
+            renderizarLista();
+        }
     }
 
-    function adicionarRoupa() {
-        const inputNome = document.getElementById('nomeRoupa');
-        const selectCategoria = document.getElementById('categoriaRoupa');
+    // Salvar Roupa no Guarda-Roupa
+    function salvarRoupa() {
+        const nomeInput = document.getElementById('nomeRoupa');
+        const categoriaSelect = document.getElementById('categoriaRoupa');
+        const detalhesInput = document.getElementById('detalhesRoupa');
 
-        const nome = inputNome.value.trim();
-        const categoria = selectCategoria.value;
-
+        const nome = nomeInput.value.trim();
         if (!nome) {
-            alert('Por favor, digite o nome da peça!');
+            alert('Por favor, digite o nome da roupa!');
             return;
         }
 
         const novaRoupa = {
             id: Date.now(),
             nome: nome,
-            categoria: categoria
+            categoria: categoriaSelect.value,
+            detalhes: detalhesInput.value.trim() || 'Sem observações'
         };
 
         armario.push(novaRoupa);
-        salvar();
-        
-        inputNome.value = '';
-        renderizarRoupas();
+        localStorage.setItem('meuArmarioApp', JSON.stringify(armario));
+
+        // Limpa formulário
+        nomeInput.value = '';
+        detalhesInput.value = '';
+
+        // Volta automaticamente para a tela de lista
+        navegarPara('telaInicio');
     }
 
-    function removerRoupa(id) {
-        armario = armario.filter(item => item.id !== id);
-        salvar();
-        renderizarRoupas();
-    }
+    // Renderizar Lista de Roupas
+    function renderizarLista() {
+        const containerLista = document.getElementById('listaRoupas');
+        const busca = document.getElementById('inputBusca').value.toLowerCase();
+        containerLista.innerHTML = '';
 
-    function renderizarRoupas() {
-        const listaDiv = document.getElementById('listaRoupas');
-        const termoBusca = document.getElementById('inputBusca').value.toLowerCase();
+        const filtradas = armario.filter(item => item.nome.toLowerCase().includes(busca));
 
-        listaDiv.innerHTML = '';
-
-        const roupasFiltradas = armario.filter(item => 
-            item.nome.toLowerCase().includes(termoBusca)
-        );
-
-        if (roupasFiltradas.length === 0) {
-            listaDiv.innerHTML = '<p class="vazio">Nenhuma roupa encontrada.</p>';
+        if (filtradas.length === 0) {
+            containerLista.innerHTML = '<p class="vazio">Nenhuma roupa guardada ainda.</p>';
             return;
         }
 
-        roupasFiltradas.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card-roupa';
-            card.innerHTML = `
+        filtradas.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'item-roupa';
+            div.onclick = () => verDetalhes(item.id);
+            div.innerHTML = `
                 <div class="info-roupa">
-                    <strong>${item.nome}</strong>
+                    <h4>${item.nome}</h4>
                     <span>${item.categoria}</span>
                 </div>
-                <button class="btn-delete" onclick="removerRoupa(${item.id})">Excluir</button>
+                <span style="color: #007bff; font-weight: bold;">Ver ➔</span>
             `;
-            listaDiv.appendChild(card);
+            containerLista.appendChild(div);
         });
     }
 
-    // Renderiza ao abrir a página
-    renderizarRoupas();
+    // Ver Detalhes da Roupa Selecionada
+    function verDetalhes(id) {
+        roupaSelecionadaId = id;
+        const roupa = armario.find(item => item.id === id);
+        if (!roupa) return;
+
+        const containerDetalhes = document.getElementById('conteudoDetalhes');
+        containerDetalhes.innerHTML = `
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                <p><strong>Peça:</strong> ${roupa.nome}</p>
+                <p style="margin-top: 8px;"><strong>Categoria:</strong> ${roupa.categoria}</p>
+                <p style="margin-top: 8px;"><strong>Detalhes/Cor:</strong> ${roupa.detalhes}</p>
+            </div>
+        `;
+
+        navegarPara('telaDetalhes');
+    }
+
+    // Excluir Roupa
+    function excluirRoupaAtual() {
+        if (confirm('Tem certeza que deseja remover esta roupa?')) {
+            armario = armario.filter(item => item.id !== roupaSelecionadaId);
+            localStorage.setItem('meuArmarioApp', JSON.stringify(armario));
+            navegarPara('telaInicio');
+        }
+    }
+
+    // Inicia na tela inicial
+    renderizarLista();
 </script>
 
 </body>
