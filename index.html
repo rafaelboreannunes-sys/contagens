@@ -3,135 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guarda-Roupa Digital</title>
+    <title>Gerenciador de Armário</title>
     <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+            background-color: #eef2f5;
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            padding: 40px 20px;
         }
 
         .container {
             background: #ffffff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
             width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
 
         h2 {
             margin-top: 0;
-            color: #333;
+            color: #2c3e50;
             text-align: center;
         }
 
-        .input-group {
+        .form-group {
             display: flex;
+            flex-direction: column;
             gap: 10px;
             margin-bottom: 20px;
         }
 
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
+        input, select, button {
+            padding: 12px;
+            border-radius: 8px;
             border: 1px solid #ccc;
-            border-radius: 5px;
             font-size: 14px;
         }
 
-        button {
-            padding: 10px 15px;
-            background-color: #28a745;
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        button.btn-add {
+            background-color: #4a90e2;
             color: white;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
             font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        button:hover {
-            background-color: #218838;
+        button.btn-add:hover {
+            background-color: #357abd;
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
+        .search-box {
+            margin-bottom: 15px;
         }
 
-        li {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            padding: 10px 12px;
-            border-radius: 5px;
-            margin-bottom: 8px;
+        .lista-roupas {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-roupa {
+            background-color: #f8f9fa;
+            border-left: 5px solid #4a90e2;
+            padding: 12px 15px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .btn-remove {
-            background-color: #dc3545;
-            padding: 5px 10px;
+        .info-roupa strong {
+            display: block;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .info-roupa span {
+            font-size: 12px;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-delete {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 12px;
         }
 
-        .btn-remove:hover {
-            background-color: #c82333;
+        .btn-delete:hover {
+            background-color: #cc0000;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>👕 Guarda-Roupa Digital</h2>
-    
-    <div class="input-group">
-        <input type="text" id="roupaInput" placeholder="Ex: Camiseta Azul, Calça Jeans...">
-        <button onclick="adicionarRoupa()">Guardar</button>
+    <h2>🧥 Meu Armário</h2>
+
+    <!-- Formulário de Cadastro -->
+    <div class="form-group">
+        <input type="text" id="nomeRoupa" placeholder="Nome da roupa (ex: Jaqueta de Couro)">
+        <select id="categoriaRoupa">
+            <option value="Camiseta / Blusa">Camiseta / Blusa</option>
+            <option value="Calça / Bermuda">Calça / Bermuda</option>
+            <option value="Casaco / Jaqueta">Casaco / Jaqueta</option>
+            <option value="Calçado">Calçado</option>
+            <option value="Acessório">Acessório</option>
+        </select>
+        <button class="btn-add" onclick="adicionarRoupa()">Guardar no Armário</button>
     </div>
 
-    <ul id="listaRoupas"></ul>
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+    <!-- Busca -->
+    <input type="text" class="search-box" id="inputBusca" placeholder="🔍 Buscar roupa pelo nome..." oninput="renderizarRoupas()">
+
+    <!-- Lista de Roupas -->
+    <div id="listaRoupas" class="lista-roupas"></div>
 </div>
 
 <script>
-    const armario = [];
+    // Carrega do localStorage ou inicia lista vazia
+    let armario = JSON.parse(localStorage.getItem('meuArmario')) || [];
+
+    function salvar() {
+        localStorage.setItem('meuArmario', JSON.stringify(armario));
+    }
 
     function adicionarRoupa() {
-        const input = document.getElementById('roupaInput');
-        const nomeRoupa = input.value.trim();
+        const inputNome = document.getElementById('nomeRoupa');
+        const selectCategoria = document.getElementById('categoriaRoupa');
 
-        if (nomeRoupa === '') {
-            alert('Por favor, digite o nome de uma peça de roupa!');
+        const nome = inputNome.value.trim();
+        const categoria = selectCategoria.value;
+
+        if (!nome) {
+            alert('Por favor, digite o nome da peça!');
             return;
         }
 
-        armario.push(nomeRoupa);
-        input.value = '';
-        atualizarLista();
+        const novaRoupa = {
+            id: Date.now(),
+            nome: nome,
+            categoria: categoria
+        };
+
+        armario.push(novaRoupa);
+        salvar();
+        
+        inputNome.value = '';
+        renderizarRoupas();
     }
 
-    function removerRoupa(index) {
-        armario.splice(index, 1);
-        atualizarLista();
+    function removerRoupa(id) {
+        armario = armario.filter(item => item.id !== id);
+        salvar();
+        renderizarRoupas();
     }
 
-    function atualizarLista() {
-        const lista = document.getElementById('listaRoupas');
-        lista.innerHTML = '';
+    function renderizarRoupas() {
+        const listaDiv = document.getElementById('listaRoupas');
+        const termoBusca = document.getElementById('inputBusca').value.toLowerCase();
 
-        armario.forEach((roupa, index) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span>${roupa}</span>
-                <button class="btn-remove" onclick="removerRoupa(${index})">Remover</button>
+        listaDiv.innerHTML = '';
+
+        const roupasFiltradas = armario.filter(item => 
+            item.nome.toLowerCase().includes(termoBusca)
+        );
+
+        if (roupasFiltradas.length === 0) {
+            listaDiv.innerHTML = '<p class="vazio">Nenhuma roupa encontrada.</p>';
+            return;
+        }
+
+        roupasFiltradas.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card-roupa';
+            card.innerHTML = `
+                <div class="info-roupa">
+                    <strong>${item.nome}</strong>
+                    <span>${item.categoria}</span>
+                </div>
+                <button class="btn-delete" onclick="removerRoupa(${item.id})">Excluir</button>
             `;
-            lista.appendChild(li);
+            listaDiv.appendChild(card);
         });
     }
+
+    // Renderiza ao abrir a página
+    renderizarRoupas();
 </script>
 
 </body>
